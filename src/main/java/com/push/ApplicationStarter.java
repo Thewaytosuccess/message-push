@@ -14,7 +14,7 @@ import org.springframework.context.annotation.ImportResource;
  * @author xhzy
  */
 @SpringBootApplication
-@ComponentScan("com.xhzy")
+@ComponentScan("com.push")
 @ImportResource("classpath*:dwr.xml")
 public class ApplicationStarter {
 
