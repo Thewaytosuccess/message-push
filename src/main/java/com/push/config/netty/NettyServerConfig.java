@@ -1,14 +1,15 @@
 package com.push.config.netty;
 
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.EventLoopGroup;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.DelimiterBasedFrameDecoder;
+import io.netty.handler.codec.Delimiters;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
+import io.netty.handler.codec.string.StringDecoder;
+import io.netty.handler.codec.string.StringEncoder;
 import io.netty.handler.stream.ChunkedWriteHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,7 +25,7 @@ import java.util.Objects;
  */
 @Configuration
 @Slf4j
-public class NettyConfig {
+public class NettyServerConfig {
 
     @Value("${netty.server.port}")
     private int port;
@@ -48,16 +49,20 @@ public class NettyConfig {
                 .childHandler(new ChannelInitializer<Channel>() {
                     @Override
                     protected void initChannel(Channel channel) {
+                        ChannelPipeline pipeline = channel.pipeline();
                         //set codec
-                        channel.pipeline().addLast(new HttpServerCodec());
+                        //channel.pipeline().addLast(new HttpServerCodec());
+                        pipeline.addLast("encoder",new StringEncoder());
+                        pipeline.addLast("decoder",new StringDecoder());
+                        //pipeline.addLast("framer",new DelimiterBasedFrameDecoder(8192,
+                        //        Delimiters.lineDelimiter()));
                         //set content length
-                        channel.pipeline().addLast(new HttpObjectAggregator(maxContentLength));
-                        channel.pipeline().addLast(new ChunkedWriteHandler());
+                        pipeline.addLast(new HttpObjectAggregator(maxContentLength));
+                        pipeline.addLast(new ChunkedWriteHandler());
                         //register handler
-                        channel.pipeline().addLast(new NettyServerHandler());
+                        pipeline.addLast(new NettyServerHandler());
                     }
                 });
-        log.info("[netty is starting...]");
         future = serverBootstrap.bind(port).syncUninterruptibly().addListener(future -> {
             if(future.isSuccess()){
                 log.info("netty server startup");

@@ -52,9 +52,10 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<Object> {
     public static void sendMessage(Message msg) {
         if(Objects.nonNull(clients) && !clients.isEmpty()){
             log.info("netty push start===");
-            clients.stream().filter(e -> msg.getReceiverId() == Long.parseLong(e.attr(
-                    AttributeKey.valueOf(e.id().asLongText())).get().toString())).
-                    forEach(e -> e.writeAndFlush(new TextWebSocketFrame(msg.getBody())));
+//            clients.stream().filter(e -> msg.getReceiverId() == Long.parseLong(e.attr(
+//                    AttributeKey.valueOf(e.id().asLongText())).get().toString())).
+//                    forEach(e -> e.writeAndFlush(new TextWebSocketFrame(msg.getBody())));
+            clients.forEach(e -> e.writeAndFlush(msg.getBody()));
         }
     }
 
@@ -63,6 +64,11 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<Object> {
         memberCount.incrementAndGet();
         log.info("在线人数：{}",memberCount.get());
         super.channelActive(ctx);
+
+        if(Objects.isNull(clients)){
+            clients = new DefaultChannelGroup(ctx.executor());
+        }
+        clients.add(ctx.channel());
     }
 
     @Override
@@ -72,15 +78,17 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<Object> {
             handleHttpRequest(ctx,(FullHttpRequest)msg);
         }
 
-        if(Objects.isNull(clients)){
-            clients = new DefaultChannelGroup(ctx.executor());
-        }
-        clients.add(ctx.channel());
-
         //之后的请求为webSocket请求
         if(msg instanceof WebSocketFrame){
              handleWebSocketRequest(ctx,(WebSocketFrame)msg);
         }
+    }
+
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        super.channelInactive(ctx);
+        clients.remove(ctx.channel());
+        memberCount.decrementAndGet();
     }
 
     private void handleWebSocketRequest(ChannelHandlerContext ctx, WebSocketFrame msg) {
