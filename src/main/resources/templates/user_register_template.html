@@ -1,0 +1,11 @@
+<!doctype>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+   <head>
+       <meta charset="utf-8"/>
+       <title>邮件模板</title>
+   </head>
+   <body>
+      您好，感谢您的注册，请点击以下链接完成注册，感谢您的支持：
+     <a href="#" th:href="@{http://localhost:8081/api/user/register/{id}(id=${id})}">账号激活</a>
+   </body>
+</html>

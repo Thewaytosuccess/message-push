@@ -3,15 +3,14 @@ package com.push.service;
 import com.push.entity.Message;
 
 /**
- * 消息服务
+ * 邮件服务
  * @author xhzy
  */
-public interface MessageService {
+public interface EmailService {
 
     /**
-     * 消息推送
+     * 发送邮件
      * @param message 消息内容
      */
-    void push(Message message);
-
+    void send(Message message);
 }

@@ -7,9 +7,23 @@ spring:
       group-id: test-consumer-group
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+  redis:
+    host: localhost
+    port: 6379
+    database: 0
+    jedis:
+      pool:
+        min-idle: 0
+        max-active: 8
+  mail:
+    host: smtp.qq.com
+    username: 2761509764@qq.com
+    password: grantedcode
+    default-encoding: utf-8
+    subject: hello-world
+mq:
+  message:
+    topic: message-push
 
 netty:
   server:
@@ -18,3 +32,9 @@ netty:
     uri-prefix: websocket
   message:
     content-length: 262144
+
+mina:
+  server:
+    port: 8100
+    buffer-size: 10240
+    idle-time: 10

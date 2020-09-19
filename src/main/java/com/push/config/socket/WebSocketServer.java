@@ -4,7 +4,9 @@ import com.push.entity.Message;
 import lombok.EqualsAndHashCode;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
+import org.springframework.web.socket.server.standard.ServerEndpointExporter;
 
 import javax.websocket.*;
 import javax.websocket.server.PathParam;
@@ -27,6 +29,11 @@ public class WebSocketServer {
     private final AtomicInteger memberCount = new AtomicInteger();
 
     private static final CopyOnWriteArraySet<WebSocketServer> CLIENTS = new CopyOnWriteArraySet<>();
+
+    @Bean
+    public ServerEndpointExporter serverEndpointExporter(){
+        return new ServerEndpointExporter();
+    }
 
     @OnOpen
     public void onOpen(@PathParam("userId") String userId,Session session, EndpointConfig config){

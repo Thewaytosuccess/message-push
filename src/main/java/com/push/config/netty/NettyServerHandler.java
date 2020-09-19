@@ -51,11 +51,13 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<Object> {
 
     public static void sendMessage(Message msg) {
         if(Objects.nonNull(clients) && !clients.isEmpty()){
-            log.info("netty push start===");
-//            clients.stream().filter(e -> msg.getReceiverId() == Long.parseLong(e.attr(
-//                    AttributeKey.valueOf(e.id().asLongText())).get().toString())).
-//                    forEach(e -> e.writeAndFlush(new TextWebSocketFrame(msg.getBody())));
-            clients.forEach(e -> e.writeAndFlush(msg.getBody()));
+            if(msg.getScope() == 0) {
+                clients.stream().filter(e -> msg.getReceiverId() == Long.parseLong(e.attr(
+                        AttributeKey.valueOf(e.id().asLongText())).get().toString())).
+                        forEach(e -> e.writeAndFlush(new TextWebSocketFrame(msg.getBody())));
+            }else{
+                clients.forEach(e -> e.writeAndFlush(msg.getBody()));
+            }
         }
     }
 
@@ -111,7 +113,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<Object> {
         if(!(msg instanceof TextWebSocketFrame)){
             throw new UnsupportedOperationException("only text msg is supported.");
         }
-        clients.writeAndFlush(new TextWebSocketFrame("response from server"));
+        clients.writeAndFlush(new TextWebSocketFrame("connected success."));
     }
 
     private void handleHttpRequest(ChannelHandlerContext ctx, FullHttpRequest request) {

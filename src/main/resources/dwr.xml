@@ -7,7 +7,7 @@
 
     <dwr:annotation-config/>
 
-    <dwr:annotation-scan scanRemoteProxy="false" base-package="com.push.service.dwr" scanDataTransferObject="true"/>
+    <dwr:annotation-scan scanRemoteProxy="false" base-package="com.push.service.message.dwr" scanDataTransferObject="true"/>
 
     <dwr:configuration/>
 </beans>
